@@ -9,7 +9,9 @@ import LotMap from "./pages/LotMap";
 import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
 import Payments from "./pages/Payments";
-import ComingSoon from "./pages/ComingSoon";
+import Reports from "./pages/Reports";
+import Audit from "./pages/Audit";
+import Configuration from "./pages/Configuration";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,9 +29,9 @@ const App = () => (
           <Route path="/clientes" element={<Clients />} />
           <Route path="/ventas" element={<Sales />} />
           <Route path="/pagos" element={<Payments />} />
-          <Route path="/reportes" element={<ComingSoon title="Reportes" />} />
-          <Route path="/auditoria" element={<ComingSoon title="Auditoría" />} />
-          <Route path="/configuracion" element={<ComingSoon title="Configuración" />} />
+          <Route path="/reportes" element={<Reports />} />
+          <Route path="/auditoria" element={<Audit />} />
+          <Route path="/configuracion" element={<Configuration />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
