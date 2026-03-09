@@ -251,6 +251,33 @@ export function generateAmortization(sale: Sale): AmortizationRow[] {
   return rows;
 }
 
+// Audit logs
+export interface AuditLog {
+  id: string;
+  date: string;
+  time: string;
+  user: string;
+  role: string;
+  action: string;
+  module: string;
+  entity: string;
+  detail: string;
+  ip: string;
+}
+
+export const auditLogs: AuditLog[] = [
+  { id: 'aud-1', date: '2026-03-09', time: '10:32:15', user: 'Fernando Reyes', role: 'ventas', action: 'Apartado de lote', module: 'Lotes', entity: 'Lote 12 – M2', detail: 'Cambió estatus de "disponible" a "apartado". Cliente: Ana Martínez Ruiz.', ip: '192.168.1.45' },
+  { id: 'aud-2', date: '2026-03-09', time: '09:15:00', user: 'Admin Sistema', role: 'superadmin', action: 'Registro de pago', module: 'Pagos', entity: 'Venta SALE-001', detail: 'Pago mensualidad #10 por $14,444. Método: transferencia. Ref: TRF-009988.', ip: '192.168.1.10' },
+  { id: 'aud-3', date: '2026-03-08', time: '16:45:30', user: 'Patricia Mora', role: 'ventas', action: 'Venta registrada', module: 'Ventas', entity: 'Lote 5 – M1', detail: 'Venta a María García Hernández. Precio: $520,000. Contado.', ip: '192.168.1.52' },
+  { id: 'aud-4', date: '2026-03-08', time: '14:20:10', user: 'Admin Sistema', role: 'superadmin', action: 'Cancelación de venta', module: 'Ventas', entity: 'Venta SALE-007', detail: 'Cancelación autorizada. Motivo: incumplimiento de pago. Lote liberado.', ip: '192.168.1.10' },
+  { id: 'aud-5', date: '2026-03-07', time: '11:00:05', user: 'Luis Vargas', role: 'cobranza', action: 'Aplicación de recargo', module: 'Cobranza', entity: 'Venta SALE-003', detail: 'Recargo moratorio de $2,367 aplicado por 15 días de atraso.', ip: '192.168.1.60' },
+  { id: 'aud-6', date: '2026-03-07', time: '09:30:00', user: 'Admin Sistema', role: 'superadmin', action: 'Descuento extraordinario', module: 'Pagos', entity: 'Venta SALE-001', detail: 'Condonación de recargos por $1,200. Autorizado por dirección.', ip: '192.168.1.10' },
+  { id: 'aud-7', date: '2026-03-06', time: '17:10:22', user: 'Fernando Reyes', role: 'ventas', action: 'Edición de cliente', module: 'Clientes', entity: 'CLI-004', detail: 'Actualización de teléfono y correo electrónico.', ip: '192.168.1.45' },
+  { id: 'aud-8', date: '2026-03-06', time: '12:55:40', user: 'Patricia Mora', role: 'ventas', action: 'Reestructura de financiamiento', module: 'Ventas', entity: 'Venta SALE-003', detail: 'Plazo extendido de 36 a 48 meses. Tasa mantenida al 12%. Autorizado.', ip: '192.168.1.52' },
+  { id: 'aud-9', date: '2026-03-05', time: '08:45:15', user: 'Admin Sistema', role: 'superadmin', action: 'Cambio de precio de lote', module: 'Lotes', entity: 'Lote 22 – M3', detail: 'Precio base actualizado de $480,000 a $510,000.', ip: '192.168.1.10' },
+  { id: 'aud-10', date: '2026-03-05', time: '08:00:00', user: 'Sistema', role: 'sistema', action: 'Generación automática de moratorios', module: 'Cobranza', entity: '3 ventas', detail: 'Recargos generados para ventas SALE-001, SALE-003, SALE-006 por vencimiento.', ip: '0.0.0.0' },
+];
+
 // Dashboard stats
 export const dashboardStats = {
   totalLots: 48,
