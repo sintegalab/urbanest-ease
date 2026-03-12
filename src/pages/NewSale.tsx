@@ -77,11 +77,16 @@ export default function NewSale() {
 
   // Step 2: Client
   const [selectedClientId, setSelectedClientId] = useState("");
+  const [clientSearch, setClientSearch] = useState("");
 
   // Step 3: Sale type
   const [saleType, setSaleType] = useState<SaleType | "">("");
   const [agreedPrice, setAgreedPrice] = useState("");
   const [notes, setNotes] = useState("");
+  const [discountEnabled, setDiscountEnabled] = useState(false);
+  const [discountType, setDiscountType] = useState<DiscountType>("fijo");
+  const [discountValue, setDiscountValue] = useState("");
+  const [discountNote, setDiscountNote] = useState("");
 
   // Step 4: Payment plan (credit)
   const [interestRate, setInterestRate] = useState("12");
