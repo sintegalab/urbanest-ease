@@ -70,11 +70,17 @@ const STEPS = ["Lote", "Cliente", "Tipo de Venta", "Plan de Pagos", "Resumen"];
 
 export default function NewSale() {
   const navigate = useNavigate();
+  const { selectedDevId: globalDevId } = useDevelopment();
   const [step, setStep] = useState(0);
 
-  // Step 1: Lot
-  const [selectedDevId, setSelectedDevId] = useState("");
+  // Step 1: Lot — initialize from global context
+  const [selectedDevId, setSelectedDevId] = useState(globalDevId);
   const [selectedLotId, setSelectedLotId] = useState("");
+
+  useEffect(() => {
+    setSelectedDevId(globalDevId);
+    setSelectedLotId("");
+  }, [globalDevId]);
 
   // Step 2: Client
   const [selectedClientId, setSelectedClientId] = useState("");
