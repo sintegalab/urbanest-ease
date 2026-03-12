@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
+import SvgMapViewer from "@/components/SvgMapViewer";
 import { lots, LOT_STATUS_CONFIG, type Lot, type LotStatus } from "@/data/mockData";
 import { useParams } from "react-router-dom";
 import { X, MapPin, User, Calendar, DollarSign, Ruler, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
