@@ -7,12 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { lots, developments, clients } from "@/data/mockData";
-import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle, Search, UserPlus, Percent, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 type SaleType = "contado" | "credito" | "donacion" | "cesion";
 type PaymentConcept = "apartado" | "anticipo" | "enganche" | "abono" | "mensualidad" | "liquidacion" | "recargo" | "descuento";
+type DiscountType = "contado" | "fijo" | "porcentual" | "promocion" | "manual";
+
+const DISCOUNT_TYPES: { value: DiscountType; label: string; description: string }[] = [
+  { value: "contado", label: "Descuento por contado", description: "Aplicado por pago de contado" },
+  { value: "fijo", label: "Descuento fijo", description: "Monto fijo de descuento" },
+  { value: "porcentual", label: "Descuento porcentual", description: "Porcentaje sobre el precio" },
+  { value: "promocion", label: "Promoción temporal", description: "Campaña o evento vigente" },
+  { value: "manual", label: "Autorizado manualmente", description: "Requiere autorización de dirección" },
+];
 
 interface PaymentPlanRow {
   id: string;
@@ -68,11 +77,16 @@ export default function NewSale() {
 
   // Step 2: Client
   const [selectedClientId, setSelectedClientId] = useState("");
+  const [clientSearch, setClientSearch] = useState("");
 
   // Step 3: Sale type
   const [saleType, setSaleType] = useState<SaleType | "">("");
   const [agreedPrice, setAgreedPrice] = useState("");
   const [notes, setNotes] = useState("");
+  const [discountEnabled, setDiscountEnabled] = useState(false);
+  const [discountType, setDiscountType] = useState<DiscountType>("fijo");
+  const [discountValue, setDiscountValue] = useState("");
+  const [discountNote, setDiscountNote] = useState("");
 
   // Step 4: Payment plan (credit)
   const [interestRate, setInterestRate] = useState("12");
@@ -86,7 +100,24 @@ export default function NewSale() {
   );
   const selectedLot = lots.find((l) => l.id === selectedLotId);
   const selectedClient = clients.find((c) => c.id === selectedClientId);
-  const price = agreedPrice ? Number(agreedPrice) : selectedLot?.basePrice || 0;
+  const basePrice = agreedPrice ? Number(agreedPrice) : selectedLot?.basePrice || 0;
+
+  // Discount calculation
+  const discountAmount = discountEnabled
+    ? discountType === "porcentual" || discountType === "contado"
+      ? Math.round(basePrice * (Number(discountValue) / 100))
+      : Number(discountValue) || 0
+    : 0;
+  const price = Math.max(0, basePrice - discountAmount);
+
+  // Client filtering
+  const filteredClients = useMemo(() => {
+    if (!clientSearch.trim()) return clients;
+    const q = clientSearch.toLowerCase();
+    return clients.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.rfc.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.phone.includes(q)
+    );
+  }, [clientSearch]);
 
   // Credit calculations
   const downPaymentAmount = Math.round(price * (Number(downPaymentPct) / 100));
@@ -290,35 +321,57 @@ export default function NewSale() {
           {/* STEP 1: Client */}
           {step === 1 && (
             <div className="space-y-5">
-              <div className="flex items-center gap-2 text-primary">
-                <User className="h-5 w-5" />
-                <h2 className="text-lg font-display font-bold text-card-foreground">Seleccionar Cliente</h2>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary">
+                  <User className="h-5 w-5" />
+                  <h2 className="text-lg font-display font-bold text-card-foreground">Seleccionar Cliente</h2>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => toast.info("Formulario de nuevo cliente próximamente")}>
+                  <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Nuevo Cliente
+                </Button>
               </div>
 
-              <div className="space-y-3">
-                {clients.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => setSelectedClientId(c.id)}
-                    className={cn(
-                      "w-full p-4 rounded-lg border text-left transition-all flex items-center justify-between",
-                      selectedClientId === c.id
-                        ? "border-primary bg-accent shadow-sm ring-1 ring-primary"
-                        : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
-                    )}
-                  >
-                    <div>
-                      <p className="font-bold text-sm text-card-foreground">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">{c.rfc} · {c.email} · {c.phone}</p>
-                    </div>
-                    <span className={cn(
-                      "text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full",
-                      c.type === "fisica" ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
-                    )}>
-                      {c.type === "fisica" ? "Persona Física" : "Persona Moral"}
-                    </span>
-                  </button>
-                ))}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nombre, RFC, correo o teléfono..."
+                  className="pl-9"
+                  value={clientSearch}
+                  onChange={(e) => setClientSearch(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                {filteredClients.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-muted-foreground">
+                    <Search className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                    No se encontraron clientes con "{clientSearch}"
+                  </div>
+                ) : (
+                  filteredClients.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => setSelectedClientId(c.id)}
+                      className={cn(
+                        "w-full p-4 rounded-lg border text-left transition-all flex items-center justify-between",
+                        selectedClientId === c.id
+                          ? "border-primary bg-accent shadow-sm ring-1 ring-primary"
+                          : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
+                      )}
+                    >
+                      <div>
+                        <p className="font-bold text-sm text-card-foreground">{c.name}</p>
+                        <p className="text-xs text-muted-foreground">{c.rfc} · {c.email} · {c.phone}</p>
+                      </div>
+                      <span className={cn(
+                        "text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full shrink-0 ml-2",
+                        c.type === "fisica" ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
+                      )}>
+                        {c.type === "fisica" ? "Persona Física" : "Persona Moral"}
+                      </span>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -369,6 +422,97 @@ export default function NewSale() {
                   <Label>Notas de la operación</Label>
                   <Textarea className="mt-1.5 h-[72px]" placeholder="Observaciones..." value={notes} onChange={(e) => setNotes(e.target.value)} />
                 </div>
+              </div>
+
+              {/* Discount Section */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => { setDiscountEnabled(!discountEnabled); if (discountEnabled) { setDiscountValue(""); setDiscountNote(""); } }}
+                  className={cn(
+                    "w-full flex items-center justify-between px-4 py-3 transition-colors",
+                    discountEnabled ? "bg-accent" : "hover:bg-muted/50"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold text-card-foreground">Aplicar descuento</span>
+                  </div>
+                  <div className={cn(
+                    "h-5 w-9 rounded-full transition-colors relative",
+                    discountEnabled ? "bg-primary" : "bg-muted-foreground/30"
+                  )}>
+                    <div className={cn(
+                      "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform shadow-sm",
+                      discountEnabled ? "translate-x-4" : "translate-x-0.5"
+                    )} />
+                  </div>
+                </button>
+
+                {discountEnabled && (
+                  <div className="p-4 border-t border-border space-y-4">
+                    <div>
+                      <Label className="text-xs">Tipo de descuento</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                        {DISCOUNT_TYPES.map((d) => (
+                          <button
+                            key={d.value}
+                            type="button"
+                            onClick={() => { setDiscountType(d.value); setDiscountValue(""); }}
+                            className={cn(
+                              "p-2.5 rounded-lg border text-left transition-all",
+                              discountType === d.value
+                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                : "border-border hover:bg-muted/50"
+                            )}
+                          >
+                            <p className="text-xs font-semibold text-card-foreground">{d.label}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{d.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs">
+                          {discountType === "porcentual" || discountType === "contado" ? "Porcentaje (%)" : "Monto ($)"}
+                        </Label>
+                        <div className="relative mt-1">
+                          <Percent className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            type="number"
+                            className="pl-8"
+                            placeholder={discountType === "porcentual" || discountType === "contado" ? "Ej: 5" : "Ej: 25000"}
+                            value={discountValue}
+                            onChange={(e) => setDiscountValue(e.target.value)}
+                            min={0}
+                            max={discountType === "porcentual" || discountType === "contado" ? 100 : undefined}
+                          />
+                        </div>
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label className="text-xs">Justificación / nota</Label>
+                        <Input
+                          className="mt-1"
+                          placeholder="Motivo del descuento..."
+                          value={discountNote}
+                          onChange={(e) => setDiscountNote(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    {discountAmount > 0 && (
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+                        <span className="text-xs font-medium text-muted-foreground">Descuento aplicado</span>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-primary">-{formatCurrency(discountAmount)}</p>
+                          <p className="text-[10px] text-muted-foreground">Precio final: {formatCurrency(price)}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -552,7 +696,11 @@ export default function NewSale() {
                 <div className="p-4 rounded-lg bg-muted/20 border border-border space-y-3">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Operación</p>
                   <p className="text-sm font-bold text-card-foreground capitalize">{saleType}</p>
-                  <p className="text-xs text-muted-foreground">Precio: {formatCurrency(price)}</p>
+                  <p className="text-xs text-muted-foreground">Precio base: {formatCurrency(basePrice)}</p>
+                  {discountEnabled && discountAmount > 0 && (
+                    <p className="text-xs text-primary font-medium">Descuento: -{formatCurrency(discountAmount)} ({DISCOUNT_TYPES.find(d => d.value === discountType)?.label})</p>
+                  )}
+                  <p className="text-xs font-semibold text-card-foreground">Precio final: {formatCurrency(price)}</p>
                   {notes && <p className="text-xs text-muted-foreground italic">"{notes}"</p>}
                 </div>
 
