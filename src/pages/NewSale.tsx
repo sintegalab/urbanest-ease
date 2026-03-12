@@ -321,35 +321,57 @@ export default function NewSale() {
           {/* STEP 1: Client */}
           {step === 1 && (
             <div className="space-y-5">
-              <div className="flex items-center gap-2 text-primary">
-                <User className="h-5 w-5" />
-                <h2 className="text-lg font-display font-bold text-card-foreground">Seleccionar Cliente</h2>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary">
+                  <User className="h-5 w-5" />
+                  <h2 className="text-lg font-display font-bold text-card-foreground">Seleccionar Cliente</h2>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => toast.info("Formulario de nuevo cliente próximamente")}>
+                  <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Nuevo Cliente
+                </Button>
               </div>
 
-              <div className="space-y-3">
-                {clients.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => setSelectedClientId(c.id)}
-                    className={cn(
-                      "w-full p-4 rounded-lg border text-left transition-all flex items-center justify-between",
-                      selectedClientId === c.id
-                        ? "border-primary bg-accent shadow-sm ring-1 ring-primary"
-                        : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
-                    )}
-                  >
-                    <div>
-                      <p className="font-bold text-sm text-card-foreground">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">{c.rfc} · {c.email} · {c.phone}</p>
-                    </div>
-                    <span className={cn(
-                      "text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full",
-                      c.type === "fisica" ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
-                    )}>
-                      {c.type === "fisica" ? "Persona Física" : "Persona Moral"}
-                    </span>
-                  </button>
-                ))}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nombre, RFC, correo o teléfono..."
+                  className="pl-9"
+                  value={clientSearch}
+                  onChange={(e) => setClientSearch(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                {filteredClients.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-muted-foreground">
+                    <Search className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                    No se encontraron clientes con "{clientSearch}"
+                  </div>
+                ) : (
+                  filteredClients.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => setSelectedClientId(c.id)}
+                      className={cn(
+                        "w-full p-4 rounded-lg border text-left transition-all flex items-center justify-between",
+                        selectedClientId === c.id
+                          ? "border-primary bg-accent shadow-sm ring-1 ring-primary"
+                          : "border-border hover:border-muted-foreground/30 hover:bg-muted/50"
+                      )}
+                    >
+                      <div>
+                        <p className="font-bold text-sm text-card-foreground">{c.name}</p>
+                        <p className="text-xs text-muted-foreground">{c.rfc} · {c.email} · {c.phone}</p>
+                      </div>
+                      <span className={cn(
+                        "text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full shrink-0 ml-2",
+                        c.type === "fisica" ? "bg-accent text-accent-foreground" : "bg-secondary text-secondary-foreground"
+                      )}>
+                        {c.type === "fisica" ? "Persona Física" : "Persona Moral"}
+                      </span>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
           )}
