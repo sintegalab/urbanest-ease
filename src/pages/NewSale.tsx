@@ -73,12 +73,11 @@ export default function NewSale() {
   const { selectedDevId: globalDevId } = useDevelopment();
   const [step, setStep] = useState(0);
 
-  // Step 1: Lot — initialize from global context
-  const [selectedDevId, setSelectedDevId] = useState(globalDevId);
+  // Step 1: Lot — use global context directly
+  const selectedDevId = globalDevId;
   const [selectedLotId, setSelectedLotId] = useState("");
 
   useEffect(() => {
-    setSelectedDevId(globalDevId);
     setSelectedLotId("");
   }, [globalDevId]);
 
