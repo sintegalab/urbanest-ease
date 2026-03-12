@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
+import SvgMapViewer from "@/components/SvgMapViewer";
 import { lots, LOT_STATUS_CONFIG, type Lot, type LotStatus } from "@/data/mockData";
 import { useParams } from "react-router-dom";
-import { X, MapPin, User, Calendar, DollarSign, Ruler } from "lucide-react";
+import { X, MapPin, User, Calendar, DollarSign, Ruler, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function formatCurrency(n: number) {
@@ -155,58 +156,12 @@ export default function LotMap() {
 
         {/* Map area */}
         <div className="relative rounded-xl border border-border bg-card shadow-sm overflow-hidden" style={{ minHeight: 500 }}>
-          <svg
-            viewBox="0 0 100 100"
-            className="w-full"
-            style={{ aspectRatio: "8/6" }}
-          >
-            {/* Grid background */}
-            <defs>
-              <pattern id="grid" width="12.5" height="16.667" patternUnits="userSpaceOnUse">
-                <path d="M 12.5 0 L 0 0 0 16.667" fill="none" stroke="hsl(var(--border))" strokeWidth="0.15" />
-              </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)" />
-
-            {filtered.map((lot) => {
-              const isSelected = selectedLot?.id === lot.id;
-              const points = lot.polygon;
-              const statusConfig = LOT_STATUS_CONFIG[lot.status];
-              // Parse color from CSS var
-              return (
-                <g key={lot.id} onClick={() => setSelectedLot(lot)} className="cursor-pointer">
-                  <polygon
-                    points={points}
-                    fill={`hsl(var(${statusConfig.colorVar}) / ${isSelected ? 0.9 : 0.6})`}
-                    stroke={isSelected ? "hsl(var(--foreground))" : `hsl(var(${statusConfig.colorVar}))`}
-                    strokeWidth={isSelected ? 0.4 : 0.2}
-                    className="transition-all duration-150 hover:opacity-90"
-                  />
-                  {/* Lot number label */}
-                  {(() => {
-                    const pts = points.split(" ").map((p) => p.split(",").map(Number));
-                    const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
-                    const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
-                    return (
-                      <text
-                        x={cx}
-                        y={cy}
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fontSize="2"
-                        fontWeight="600"
-                        fill="hsl(var(--foreground))"
-                        className="pointer-events-none select-none"
-                        style={{ fontFamily: "Space Grotesk" }}
-                      >
-                        {lot.number}
-                      </text>
-                    );
-                  })()}
-                </g>
-              );
-            })}
-          </svg>
+          {/* SVG Map with zoom/pan */}
+          <SvgMapViewer
+            lots={filtered}
+            selectedLot={selectedLot}
+            onSelectLot={setSelectedLot}
+          />
 
           {/* Detail panel */}
           {selectedLot && <LotDetail lot={selectedLot} onClose={() => setSelectedLot(null)} />}
