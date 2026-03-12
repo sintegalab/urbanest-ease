@@ -13,6 +13,15 @@ import { toast } from "sonner";
 
 type SaleType = "contado" | "credito" | "donacion" | "cesion";
 type PaymentConcept = "apartado" | "anticipo" | "enganche" | "abono" | "mensualidad" | "liquidacion" | "recargo" | "descuento";
+type DiscountType = "contado" | "fijo" | "porcentual" | "promocion" | "manual";
+
+const DISCOUNT_TYPES: { value: DiscountType; label: string; description: string }[] = [
+  { value: "contado", label: "Descuento por contado", description: "Aplicado por pago de contado" },
+  { value: "fijo", label: "Descuento fijo", description: "Monto fijo de descuento" },
+  { value: "porcentual", label: "Descuento porcentual", description: "Porcentaje sobre el precio" },
+  { value: "promocion", label: "Promoción temporal", description: "Campaña o evento vigente" },
+  { value: "manual", label: "Autorizado manualmente", description: "Requiere autorización de dirección" },
+];
 
 interface PaymentPlanRow {
   id: string;
