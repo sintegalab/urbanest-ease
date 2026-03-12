@@ -100,7 +100,24 @@ export default function NewSale() {
   );
   const selectedLot = lots.find((l) => l.id === selectedLotId);
   const selectedClient = clients.find((c) => c.id === selectedClientId);
-  const price = agreedPrice ? Number(agreedPrice) : selectedLot?.basePrice || 0;
+  const basePrice = agreedPrice ? Number(agreedPrice) : selectedLot?.basePrice || 0;
+
+  // Discount calculation
+  const discountAmount = discountEnabled
+    ? discountType === "porcentual" || discountType === "contado"
+      ? Math.round(basePrice * (Number(discountValue) / 100))
+      : Number(discountValue) || 0
+    : 0;
+  const price = Math.max(0, basePrice - discountAmount);
+
+  // Client filtering
+  const filteredClients = useMemo(() => {
+    if (!clientSearch.trim()) return clients;
+    const q = clientSearch.toLowerCase();
+    return clients.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.rfc.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.phone.includes(q)
+    );
+  }, [clientSearch]);
 
   // Credit calculations
   const downPaymentAmount = Math.round(price * (Number(downPaymentPct) / 100));
