@@ -257,14 +257,12 @@ export default function NewSale() {
               <div className="space-y-3">
                 <div>
                   <Label>Desarrollo</Label>
-                  <Select value={selectedDevId} onValueChange={(v) => { setSelectedDevId(v); setSelectedLotId(""); }}>
-                    <SelectTrigger className="mt-1.5"><SelectValue placeholder="Selecciona un desarrollo" /></SelectTrigger>
-                    <SelectContent>
-                      {developments.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>{d.name} — {d.location}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <p className="mt-1.5 text-sm font-medium text-foreground">
+                    {developments.find((d) => d.id === selectedDevId)?.name || "—"}{" "}
+                    <span className="text-muted-foreground font-normal">
+                      — {developments.find((d) => d.id === selectedDevId)?.location}
+                    </span>
+                  </p>
                 </div>
 
                 {selectedDevId && (
