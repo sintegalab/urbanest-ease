@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { lots, developments, clients } from "@/data/mockData";
-import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle, Search, UserPlus, Percent, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
