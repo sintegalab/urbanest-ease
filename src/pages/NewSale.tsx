@@ -1,5 +1,5 @@
 import AppLayout from "@/components/AppLayout";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { lots, developments, clients } from "@/data/mockData";
 import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle, Search, UserPlus, Percent, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useDevelopment } from "@/contexts/DevelopmentContext";
 
 type SaleType = "contado" | "credito" | "donacion" | "cesion";
 type PaymentConcept = "apartado" | "anticipo" | "enganche" | "abono" | "mensualidad" | "liquidacion" | "recargo" | "descuento";
@@ -69,11 +70,17 @@ const STEPS = ["Lote", "Cliente", "Tipo de Venta", "Plan de Pagos", "Resumen"];
 
 export default function NewSale() {
   const navigate = useNavigate();
+  const { selectedDevId: globalDevId } = useDevelopment();
   const [step, setStep] = useState(0);
 
-  // Step 1: Lot
-  const [selectedDevId, setSelectedDevId] = useState("");
+  // Step 1: Lot — initialize from global context
+  const [selectedDevId, setSelectedDevId] = useState(globalDevId);
   const [selectedLotId, setSelectedLotId] = useState("");
+
+  useEffect(() => {
+    setSelectedDevId(globalDevId);
+    setSelectedLotId("");
+  }, [globalDevId]);
 
   // Step 2: Client
   const [selectedClientId, setSelectedClientId] = useState("");
