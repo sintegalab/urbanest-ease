@@ -1,11 +1,12 @@
+import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import { payments, sales } from "@/data/mockData";
+import { payments as initialPayments, sales, type Payment } from "@/data/mockData";
 import { cn } from "@/lib/utils";
+import RegisterPaymentDialog from "@/components/RegisterPaymentDialog";
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 }
-
 const methodLabels: Record<string, string> = {
   transferencia: "Transferencia",
   deposito: "Depósito",
