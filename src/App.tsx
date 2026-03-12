@@ -8,6 +8,7 @@ import Developments from "./pages/Developments";
 import LotMap from "./pages/LotMap";
 import Clients from "./pages/Clients";
 import Sales from "./pages/Sales";
+import NewSale from "./pages/NewSale";
 import Payments from "./pages/Payments";
 import Reports from "./pages/Reports";
 import Audit from "./pages/Audit";
