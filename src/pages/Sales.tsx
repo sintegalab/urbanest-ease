@@ -3,6 +3,7 @@ import { sales, generateAmortization, type Sale, type AmortizationRow } from "@/
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
@@ -60,6 +61,7 @@ function AmortizationTable({ sale }: { sale: Sale }) {
 
 export default function Sales() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   return (
     <AppLayout>
@@ -69,7 +71,7 @@ export default function Sales() {
             <h1 className="text-2xl font-display font-bold text-foreground">Ventas</h1>
             <p className="text-sm text-muted-foreground mt-1">{sales.length} operaciones registradas</p>
           </div>
-          <button className="rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity">
+          <button onClick={() => navigate("/ventas/nueva")} className="rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity">
             + Nueva Venta
           </button>
         </div>
