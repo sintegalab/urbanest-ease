@@ -696,7 +696,11 @@ export default function NewSale() {
                 <div className="p-4 rounded-lg bg-muted/20 border border-border space-y-3">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Operación</p>
                   <p className="text-sm font-bold text-card-foreground capitalize">{saleType}</p>
-                  <p className="text-xs text-muted-foreground">Precio: {formatCurrency(price)}</p>
+                  <p className="text-xs text-muted-foreground">Precio base: {formatCurrency(basePrice)}</p>
+                  {discountEnabled && discountAmount > 0 && (
+                    <p className="text-xs text-primary font-medium">Descuento: -{formatCurrency(discountAmount)} ({DISCOUNT_TYPES.find(d => d.value === discountType)?.label})</p>
+                  )}
+                  <p className="text-xs font-semibold text-card-foreground">Precio final: {formatCurrency(price)}</p>
                   {notes && <p className="text-xs text-muted-foreground italic">"{notes}"</p>}
                 </div>
 
