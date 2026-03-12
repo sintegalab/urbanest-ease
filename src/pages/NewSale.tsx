@@ -1,5 +1,5 @@
 import AppLayout from "@/components/AppLayout";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { lots, developments, clients } from "@/data/mockData";
 import { ArrowLeft, Plus, Trash2, CheckCircle2, MapPin, User, FileText, CreditCard, AlertCircle, Search, UserPlus, Percent, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useDevelopment } from "@/contexts/DevelopmentContext";
 
 type SaleType = "contado" | "credito" | "donacion" | "cesion";
 type PaymentConcept = "apartado" | "anticipo" | "enganche" | "abono" | "mensualidad" | "liquidacion" | "recargo" | "descuento";
