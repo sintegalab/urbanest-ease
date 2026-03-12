@@ -73,12 +73,11 @@ export default function NewSale() {
   const { selectedDevId: globalDevId } = useDevelopment();
   const [step, setStep] = useState(0);
 
-  // Step 1: Lot — initialize from global context
-  const [selectedDevId, setSelectedDevId] = useState(globalDevId);
+  // Step 1: Lot — use global context directly
+  const selectedDevId = globalDevId;
   const [selectedLotId, setSelectedLotId] = useState("");
 
   useEffect(() => {
-    setSelectedDevId(globalDevId);
     setSelectedLotId("");
   }, [globalDevId]);
 
@@ -258,14 +257,12 @@ export default function NewSale() {
               <div className="space-y-3">
                 <div>
                   <Label>Desarrollo</Label>
-                  <Select value={selectedDevId} onValueChange={(v) => { setSelectedDevId(v); setSelectedLotId(""); }}>
-                    <SelectTrigger className="mt-1.5"><SelectValue placeholder="Selecciona un desarrollo" /></SelectTrigger>
-                    <SelectContent>
-                      {developments.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>{d.name} — {d.location}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <p className="mt-1.5 text-sm font-medium text-foreground">
+                    {developments.find((d) => d.id === selectedDevId)?.name || "—"}{" "}
+                    <span className="text-muted-foreground font-normal">
+                      — {developments.find((d) => d.id === selectedDevId)?.location}
+                    </span>
+                  </p>
                 </div>
 
                 {selectedDevId && (
