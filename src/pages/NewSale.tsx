@@ -423,6 +423,97 @@ export default function NewSale() {
                   <Textarea className="mt-1.5 h-[72px]" placeholder="Observaciones..." value={notes} onChange={(e) => setNotes(e.target.value)} />
                 </div>
               </div>
+
+              {/* Discount Section */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => { setDiscountEnabled(!discountEnabled); if (discountEnabled) { setDiscountValue(""); setDiscountNote(""); } }}
+                  className={cn(
+                    "w-full flex items-center justify-between px-4 py-3 transition-colors",
+                    discountEnabled ? "bg-accent" : "hover:bg-muted/50"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold text-card-foreground">Aplicar descuento</span>
+                  </div>
+                  <div className={cn(
+                    "h-5 w-9 rounded-full transition-colors relative",
+                    discountEnabled ? "bg-primary" : "bg-muted-foreground/30"
+                  )}>
+                    <div className={cn(
+                      "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform shadow-sm",
+                      discountEnabled ? "translate-x-4" : "translate-x-0.5"
+                    )} />
+                  </div>
+                </button>
+
+                {discountEnabled && (
+                  <div className="p-4 border-t border-border space-y-4">
+                    <div>
+                      <Label className="text-xs">Tipo de descuento</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                        {DISCOUNT_TYPES.map((d) => (
+                          <button
+                            key={d.value}
+                            type="button"
+                            onClick={() => { setDiscountType(d.value); setDiscountValue(""); }}
+                            className={cn(
+                              "p-2.5 rounded-lg border text-left transition-all",
+                              discountType === d.value
+                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                : "border-border hover:bg-muted/50"
+                            )}
+                          >
+                            <p className="text-xs font-semibold text-card-foreground">{d.label}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{d.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs">
+                          {discountType === "porcentual" || discountType === "contado" ? "Porcentaje (%)" : "Monto ($)"}
+                        </Label>
+                        <div className="relative mt-1">
+                          <Percent className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            type="number"
+                            className="pl-8"
+                            placeholder={discountType === "porcentual" || discountType === "contado" ? "Ej: 5" : "Ej: 25000"}
+                            value={discountValue}
+                            onChange={(e) => setDiscountValue(e.target.value)}
+                            min={0}
+                            max={discountType === "porcentual" || discountType === "contado" ? 100 : undefined}
+                          />
+                        </div>
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label className="text-xs">Justificación / nota</Label>
+                        <Input
+                          className="mt-1"
+                          placeholder="Motivo del descuento..."
+                          value={discountNote}
+                          onChange={(e) => setDiscountNote(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    {discountAmount > 0 && (
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+                        <span className="text-xs font-medium text-muted-foreground">Descuento aplicado</span>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-primary">-{formatCurrency(discountAmount)}</p>
+                          <p className="text-[10px] text-muted-foreground">Precio final: {formatCurrency(price)}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
