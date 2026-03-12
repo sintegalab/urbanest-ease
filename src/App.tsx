@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/mapa/:developmentId" element={<LotMap />} />
           <Route path="/clientes" element={<Clients />} />
           <Route path="/ventas" element={<Sales />} />
+          <Route path="/ventas/nueva" element={<NewSale />} />
           <Route path="/pagos" element={<Payments />} />
           <Route path="/reportes" element={<Reports />} />
           <Route path="/auditoria" element={<Audit />} />

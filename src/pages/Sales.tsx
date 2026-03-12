@@ -71,7 +71,7 @@ export default function Sales() {
             <h1 className="text-2xl font-display font-bold text-foreground">Ventas</h1>
             <p className="text-sm text-muted-foreground mt-1">{sales.length} operaciones registradas</p>
           </div>
-          <button className="rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity">
+          <button onClick={() => navigate("/ventas/nueva")} className="rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity">
             + Nueva Venta
           </button>
         </div>
