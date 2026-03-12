@@ -61,6 +61,7 @@ function AmortizationTable({ sale }: { sale: Sale }) {
 
 export default function Sales() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   return (
     <AppLayout>
