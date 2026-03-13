@@ -1,6 +1,6 @@
 import AppLayout from "@/components/AppLayout";
-import { clients } from "@/data/mockData";
-import { Search, User, Mail, Phone, MapPin } from "lucide-react";
+import { clients, lots, sales, developments, LOT_STATUS_CONFIG } from "@/data/mockData";
+import { Search, User, Mail, Phone, MapPin, Landmark } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,15 @@ export default function Clients() {
   );
 
   const detail = clients.find((c) => c.id === selected);
+
+  // Get lots assigned to selected client via sales + lots with clientName match
+  const clientLots = detail
+    ? lots.filter((l) => l.clientName === detail.name)
+    : [];
+
+  const clientSales = detail
+    ? sales.filter((s) => s.clientName === detail.name)
+    : [];
 
   return (
     <AppLayout>
@@ -77,7 +86,7 @@ export default function Clients() {
 
           {/* Detail */}
           {detail && (
-            <div className="w-[300px] rounded-xl border border-border bg-card shadow-sm p-5 space-y-4 animate-fade-in shrink-0">
+            <div className="w-[340px] rounded-xl border border-border bg-card shadow-sm p-5 space-y-4 animate-fade-in shrink-0 max-h-[calc(100vh-220px)] overflow-y-auto">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
                   <User className="h-6 w-6" />
@@ -89,18 +98,71 @@ export default function Clients() {
               </div>
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4" /> {detail.email}
+                  <Mail className="h-4 w-4 shrink-0" /> {detail.email}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Phone className="h-4 w-4" /> {detail.phone}
+                  <Phone className="h-4 w-4 shrink-0" /> {detail.phone}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" /> {detail.address}
+                  <MapPin className="h-4 w-4 shrink-0" /> {detail.address}
                 </div>
               </div>
               <div className="border-t border-border pt-3 text-xs text-muted-foreground">
                 RFC: <span className="font-mono">{detail.rfc}</span><br />
                 Registrado: {detail.createdAt}
+              </div>
+
+              {/* Assigned Lots */}
+              <div className="border-t border-border pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Landmark className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="text-sm font-semibold text-card-foreground">Lotes asignados ({clientLots.length})</h3>
+                </div>
+                {clientLots.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Sin lotes asignados</p>
+                ) : (
+                  <div className="space-y-2.5">
+                    {clientLots.map((lot) => {
+                      const dev = developments.find((d) => d.id === lot.developmentId);
+                      const sale = clientSales.find((s) => s.lotId === lot.id);
+                      const statusCfg = LOT_STATUS_CONFIG[lot.status];
+                      return (
+                        <div key={lot.id} className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-card-foreground">
+                              Lote {lot.number} – {lot.block}
+                            </span>
+                            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full text-white", statusCfg.twClass)}>
+                              {statusCfg.label}
+                            </span>
+                          </div>
+                          {dev && (
+                            <p className="text-xs text-muted-foreground">{dev.name}</p>
+                          )}
+                          <div className="text-xs text-muted-foreground space-y-0.5">
+                            <p>{lot.area} m² · {lot.type}</p>
+                            {sale && (
+                              <>
+                                <p>Precio: ${sale.totalPrice.toLocaleString('es-MX')}</p>
+                                <p>Pagado: ${sale.paidAmount.toLocaleString('es-MX')} · Saldo: ${sale.pendingBalance.toLocaleString('es-MX')}</p>
+                                <p className={cn(
+                                  "font-medium",
+                                  sale.status === 'activa' ? 'text-primary' :
+                                  sale.status === 'liquidada' ? 'text-lot-settled' :
+                                  'text-muted-foreground'
+                                )}>
+                                  {sale.status === 'activa' ? 'Financiamiento activo' :
+                                   sale.status === 'liquidada' ? 'Liquidado' :
+                                   sale.status === 'cancelada' ? 'Cancelada' : 'Reestructurada'}
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
